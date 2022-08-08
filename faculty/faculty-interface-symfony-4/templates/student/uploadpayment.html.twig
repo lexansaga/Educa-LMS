@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<link rel="stylesheet" href="assets/css/style.css" />
+    <main>
+    <div class=" header">
+            <div class="header-menu">
+                <div class="title"><div class="menu-button">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>Educa Academy</div>
+            </div>
+        </div>
+           <div class="main-content">
+            <h3>Upload Payment</h3>
+            <div class="main-content-wrapper">
+
+                <div class="mb-3 form-upload">
+                    <select id="subjects">
+                        <option value="DEFAULT">DEFAULT</option>
+                        {% for course in all %}
+                            
+                            <option value={{course.id}}>{{course.course}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="formFileMultiple" class="form-label" >Multiple files input example</label>
+                    <span id="error" ></span>
+                    <input class="form-control upload-file" type="file" id="formFileMultiple" multiple data-is-authenticated="{{id}}" hidden>
+                    
+
+                    <button type="button" class="btn btn-def" id="actbutton" onclick="uploadPayment()" hidden>UPLOAD</button>
+                    <ul id="receipts" hidden>
+                        {# {% if payments is not empty %}
+                            {% for receipt in payments %}
+                            
+                            {% if receipt.status == "pending" %}
+                            <li style="border-color:yellow" >File
+                                <span onclick="getFile('{{receipt.filename}}','payments',{{id}})" > {{receipt.filename}}</span>
+                                <div class="remove-file"><i class='bx bx-x' onclick="removePayment('{{receipt.filename}}',{{id}})"></i></div>
+                                </li>
+                            {% elseif receipt.status == "accepted"%}
+                            <li style="border-color:green" >File
+                            <span onclick="getFile('{{receipt.filename}}','payments',{{id}})" > {{receipt.filename}}</span>
+                            <div class="remove-file"><i class='bx bx-x' onclick="removePayment('{{receipt.filename}}',{{id}})"></i></div>
+                            </li>
+                            {% else %}
+                            <li style="border-color:red" >File
+                            <span onclick="getFile('{{receipt.filename}}','payments',{{id}})" > {{receipt.filename}}</span>
+                            <div class="remove-file"><i class='bx bx-x' onclick="removePayment('{{receipt.filename}}',{{id}})"></i></div>
+                            </li>
+                            {% endif %}
+                            
+                                
+                            
+                        {% endfor %}
+                        {% endif %} #}
+                    </ul>
+                    <h2>REMAINING BALANCE: {{balance}}</h2>
+                    {% for b in allterm %}
+                    <h2> {{ b.entlev ~ " " ~b.term}}</h2>
+                   
+                    <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total = 0 %}
+                        {% for a in extrafess[b.entlev ~ " " ~ b.term]  %}
+                            
+                            {% if a.iscourse is defined%}
+                            {% set total = total + a.price %}
+                            <tr>
+                                <td>{{a.coursename}}</td>
+                                <td>{{a.price}}</td>
+                                <td>{{a.ispaid ? "PAID":"UNPAID"}}</td>
+                            </tr>        
+                            {% endif %}
+                        {% endfor %}
+                        <tr>
+                                <td>Total</td>
+                                <td>{{total}}</td>
+                            </tr>        
+                    </tbody>
+                    {% set total1 = 0%}
+                    </table>
+                      <table class ="table table-bordered">
+                                <thead>
+                                    <tr>
+                                    <th> Title</th>
+                                    <th> Price</th>
+                                    <th> Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   
+                                    {% if extrafess is not null  and  extrafess[b.entlev ~ " " ~ b.term] is defined%}
+
+                                    {% for c in extrafess[b.entlev ~ " " ~ b.term] %}
+                                    {% if c.iscourse is not defined %}
+                                    {% set total1 = total1 + c.expenseprice %}
+                                        
+                                        <tr>
+                                            <td>{{c.expensename}}</td>
+                                            <td>{{c.expenseprice}}</td>
+                                            <td>{{c.ispaid ? "PAID":"UNPAID"}}</td>
+                                        </tr>
+                                    {% endif %}    
+                                    {% endfor %}
+                                    
+                                    {% endif %}
+                                    
+                                    <tr>
+                                            <td>Total</td>
+                                            <td>{{total1}}</td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                                {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+    {# <script src="{{ app.request.schemeAndHttpHost }}/assets/js/script.js"></script> #}
+    <script src="{{ app.request.schemeAndHttpHost }}/assets/js/uploadpayment.js"></script>
+    <script src="{{ app.request.schemeAndHttpHost }}/assets/js/getFile.js"></script>
+    <script src="{{ app.request.schemeAndHttpHost }}/assets/js/removeReceipt.js"></script>
+    <script>
+            var select = document.getElementById("subjects");
+            var input = document.getElementById("formFileMultiple");
+            var button = document.getElementById("actbutton");
+            var rec = document.getElementById("receipts");
+            
+            let allreceipts = [];
+            {% for recip in payments %}
+                allreceipts.push({
+                    filename:"{{recip.filename}}",
+                    status:"{{recip.status}}",
+                    courseID:{{recip.courseid}},
+                })
+            {% endfor %}
+            
+            select.addEventListener('change',(data)=>{
+                
+                
+                if(data.target.value!="DEFAULT"){
+                    var filtered = allreceipts.filter((s)=>s.courseID==data.target.value);
+                    if(formdata.has('courseid')){
+                        formdata.set('courseid',data.target.value);
+                    }else{
+                         
+                        formdata.append('courseid',data.target.value);
+                    }
+                    $('.receiptsli').remove();
+                    filtered.map((a)=>{
+                        
+                        let li = $(`<li class="receiptsli" style="border-color:red"  ><div>
+                        <p>File <span onclick="getFile('${a.filename}','payments',{{id}})" >${a.filename}</span></p><div class="remove-file"><i class='bx bx-x' onclick="removePayment('${a.filename}',{{id}})"></i></div></li>`);
+                        $( "#receipts" ).append(li[0].outerHTML);
+                        
+                    })
+                    input.hidden = false;
+                    rec.hidden = false;
+                    button.hidden = false;
+                }else{
+                    rec.hidden = true;
+                    button.hidden = true;
+                    input.hidden = true;
+                }
+                
+            })
+    
+    </script>
+    </main>
+{% endblock %}

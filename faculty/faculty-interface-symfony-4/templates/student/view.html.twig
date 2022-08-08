@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} View My Students {% endblock %}
+
+{% block stylesheets %}
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+	<!-- FONT AWESOME -->
+	<script src="https://kit.fontawesome.com/575abfd474.js" crossorigin="anonymous"></script>
+	<!-- BOOTSTRAP -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <style>
+       span{
+        color: #fb8500;
+       }
+    </style>
+{% endblock %}
+
+{% block body %}
+<body>
+    <!--wrapper start-->
+    <div class="wrapper">
+        <!--header menu start-->
+        <div class="header">
+          <div class="header-menu">
+             <div class="title"><div class="menu-button">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>Educa Academy</div>
+                    </div>
+        </div>
+        <!--header menu end-->
+        <!--sidebar start-->
+     
+        <!--sidebar end-->
+        <!--main container start-->
+        <div class="content">
+            <div class="directory">
+                <p>My Classes / My Students </p>
+            </div>
+            <hr></hr>
+            
+            <h5>My Students in <span>{{ course.coursename }}</span> | <span>{{ course.class }}</span></h5>
+            <br>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Student Name            </th>
+                    <th>Midterm                 </th>
+                    <th>Final                   </th>
+                    <th>Grade                   </th>
+                    <th>Remark                  </th>
+                    <th>Action                  </th>
+                </tr>
+                {% for s in students %}
+                <tbody>
+                    <tr>
+                        
+                        <td>{{ s.fullname }}</td>
+                        <td>{{ s.program!=null and s.program != "Licensure Examination for Teachers" ? s.Midterm : "N/A"}}</td>
+                        <td>{{ s.program!=null and s.program != "Licensure Examination for Teachers" ? s.Final  : "N/A"}}</td>
+                        <td>{{ s.program!=null and s.program != "Licensure Examination for Teachers" ? s.Grade  : "N/A"}}</td>
+                        <td>{{ s.Remarks }}</td>
+
+                        <td>
+                            {% if s.Remarks != NULL %}
+                            <label style="color: green;">Grade Submitted</label>
+                            
+                            <a style="text-decoration: none; color: blue;" href="{{ path('gradeStudent', {'id':s.id,'course':s.course,'fullname':s.fullname}) }}">| Edit |</a>
+                            {% else %}
+                            
+                            <a style="text-decoration: none; color: red;" href="{{ path('gradeStudent', {'id':s.id,'course':s.course,'fullname':s.fullname}) }}">Grade</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+
+
+        </div>
+        <!--main container end-->
+    </div>
+    <!--wrapper end-->
+
+    </div>
+</body>
+{% endblock %}

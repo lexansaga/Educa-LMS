@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<main>
+<div class="header">
+  <div class="header-menu">
+             <div class="title"><div class="menu-button">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>Educa Academy</div>
+                    </div>
+        </div>
+<div class="main-content">
+<h3>{{activity.tasktype}}</h3>
+            
+            <div>
+                <div class="activity-container-flex">
+
+                    <div class="activity-content" style="width:90%">
+
+                        <h2 class="activity-title">{{activity.activityname}}</h2>
+                        <h2 id="myScore">SCORE: {{activity.score}}</h2>
+                       {% if activity.activitytype == "Essay" %}
+                            <div class="activity-upload"
+                            style="margin:22px  0">
+                                    {% if subfiles is not empty %}
+    <ul>
+    
+    
+                                    {% for a in subfiles %}
+
+
+                                     <li>File <label
+                                     style="cursor:pointer;color:var(--secondary-color);
+                                     font-weight:600;
+                                     margin:0 0 0 22px"
+                                     
+                                     onclick="getFile('{{a}}','submittedactivities','{{userid}}')"
+                                     >{{a}}</label>
+                                        
+                                    </li>
+                                        
+                                    {% endfor %}
+    </ul>
+                                    {% endif %}
+
+                            </div>
+                            <input
+                                placeholder="Add score"
+                                class="points form-control"
+                            style="width:30%"/>
+                        {% elseif activity.activitytype == "Quiz" %}
+
+                        
+                        <div class="quiz-wrapper">
+                            <div id="timer"></div>
+                            <div class="quiz">
+                                
+                                {% for a in activity.quizquestions %}
+                                    {% if a.activitytype == "Identification" %}
+                                    <br/>
+                                       <label>QUESTION: {{a.question}}</label>
+                                        <br/>
+                                        <label> ANSWER: {{a.answer}}</label>
+                                    {% elseif a.activitytype == "Multiple" %}
+                                        <br/>
+                                        <label>MULTIPLE CHOICE QUESTION: {{a.question}}</label>
+                                        <br/>
+                                        <label>ANSWER:{{a.answer}}</label>
+                                        <br/>
+                                    {% else %}
+                                        <br/>
+                                        <label>ESSAY QUESTION: {{a.question}}</label>
+                                        <br/>
+                                        <label
+                                        
+                                        >ANSWER: {{a.answer}}</label>
+                                        <br/>
+                                        
+                                            <input 
+                                                placeholder="addpoints"
+                                                class="points"
+                                            />
+                                        
+                                        
+                                    {% endif %}
+                                    
+                                {% endfor %}
+                               
+                    
+                            </div>
+
+
+                            
+
+
+
+                            
+
+
+                            
+                        </div>
+                        {%else%}
+                        <div class="quiz-wrapper">
+                              {% for a in activity.quizquestions %}
+                                    {% if a.type == "Identification" %}
+                                    <br/>
+                                       <label>QUESTION: {{a.question}}</label>
+                                        <br/>
+                                        <label> ANSWER: {{a.currentAnswer}}</label>
+                                    {% elseif a.type == "Multiple" %}
+                                        <br/>
+                                        <label>MULTIPLE CHOICE QUESTION: {{a.question}}</label>
+                                        <br/>
+                                        <label>ANSWER:{{a.currentAnswer}}</label>
+                                        <br/>
+                                    {% else %}
+                                        <br/>
+                                        <label>ESSAY QUESTION: {{a.question}}</label>
+                                        <br/>
+                                        <label
+                                        
+                                        >ANSWER: {{a.currentAnswer}}</label>
+                                        <br/>
+                                        
+                                            <input 
+                                                placeholder="addpoints"
+                                                class="points"
+                                            />
+                                        
+                                        
+                                    {% endif %}
+                                    
+                                {% endfor %}
+                        </div>
+                       {% endif %}
+
+
+                        
+                    </div>
+                  
+                    <button class="btn btn-primary btn-submit-quiz" onclick="addPoints({{id}},{{activity.quizquestions|json_encode}})" style="margin:28px 0 0 0;width:fit-content">DONE</button>
+
+                </div>
+            </div>
+        </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+    <script src="{{ app.request.schemeAndHttpHost }}/assets/js/script.js"></script>
+    <script src="{{ app.request.schemeAndHttpHost }}/assets/js/submitactivities.js"></script>
+    <script src="{{ app.request.schemeAndHttpHost }}/assets/js/addPoints.js"></script>
+    <script src="{{ app.request.schemeAndHttpHost }}/assets/js/getFile.js"></script>
+</main>
+     
+{% endblock %}
